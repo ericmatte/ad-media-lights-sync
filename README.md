@@ -6,7 +6,7 @@ _AppDaemon App that synchronizes the color of RGB lights with the thumbnail of a
 
 ---
 
-<img src="examples/example-1.jpg" alt="Example 1" width="400"> <img src="examples/example-2.jpg" alt="Example 1" width="400">
+<img src="https://github.com/ericmatte/ad-media-lights-sync/raw/master/examples/example-1.jpg" alt="Example 1" width="400"> <img src="https://github.com/ericmatte/ad-media-lights-sync/raw/master/examples/example-2.jpg" alt="Example 1" width="400">
 
 ## Features
 
