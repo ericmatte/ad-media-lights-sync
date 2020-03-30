@@ -4,14 +4,16 @@
 
 _AppDaemon App that synchronizes the color of RGB lights with the thumbnail of a media player in Home Assistant._
 
+---
+
+<img src="examples/example-1.jpg" alt="Example 1" width="400"> <img src="examples/example-2.jpg" alt="Example 1" width="400">
+
 ## Features
 
 - Realtime RGB lights color synchronization with the thumbnail of a media player
 - Extract most relevant colors from a picture and assign them to lights
 - Always creates great matching moody ambiances
 - Change all configured lights color at the same time (using multi-threading)
-
-Based on `music_lights.py` from this project: https://github.com/astone123/appdaemon-apps
 
 ## Installation
 
@@ -61,6 +63,6 @@ media_lights_sync:
 
 ## Notes
 
-This code has only been tested using a ChromeCast and Phillips Hue lights.
-
-If you find a bug with another type of media player or light, PRs and detailed issues are welcome.
+- Based on `music_lights.py` from this project: https://github.com/astone123/appdaemon-apps.
+- This code has only been tested using a ChromeCast and Phillips Hue lights.
+- If you find a bug with another type of media player or light, PRs and detailed issues are welcome.
