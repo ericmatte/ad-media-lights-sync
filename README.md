@@ -64,8 +64,17 @@ media_lights_sync:
 | `condition.state`  | False    | string |                     | The state to match in order for the lights to sync.            |
 | `lights`           | False    | list   |                     | The list of all the lights entity_id to sync to.               |
 
+## Tests
+
+This app has been tested with the following devices:
+
+- **Media Players**:
+  - ChromeCast
+- **RGB Lights**:
+  - Philips Hue
+  - Z-Wave RGB Light
+
 ## Notes
 
 - Based on `music_lights.py` from this project: https://github.com/astone123/appdaemon-apps.
-- This code has only been tested using a ChromeCast and Phillips Hue lights.
 - If you find a bug with another type of media player or light, PRs and detailed issues are welcome.
