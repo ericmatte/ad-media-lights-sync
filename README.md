@@ -1,6 +1,8 @@
 # Media Player Lights Sync
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs) [![](https://img.shields.io/github/release/ericmatte/ad-media-lights-sync/all.svg?style=for-the-badge)](https://github.com/ericmatte/ad-media-lights-sync/releases)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs) [![](https://img.shields.io/github/release/ericmatte/ad-media-lights-sync/all.svg?style=for-the-badge)](https://github.com/ericmatte/ad-media-lights-sync/releases)
+
+<a href="https://www.buymeacoffee.com/ericmatte" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
 
 _AppDaemon App that synchronizes the color of RGB lights with the thumbnail of a media player in Home Assistant._
 
@@ -13,11 +15,12 @@ _AppDaemon App that synchronizes the color of RGB lights with the thumbnail of a
 - Realtime RGB lights color synchronization with the thumbnail of a media player
 - Extract most relevant colors from a picture and assign them to lights
 - Always creates great matching moody ambiances
-- Change all configured lights color at the same time (using multi-threading)
+- Change all configured lights color at the same time using multithreading
+- Prevent lights synchronization based on a state condition from your Home Assistant
 
 ## Installation
 
-Download the `media_lights_sync` directory from inside the `apps` directory here to your local `apps` directory, then add the configuration to enable the `media_lights_sync` module.
+Use [HACS](https://hacs.xyz/) or download the `media_lights_sync` directory from inside the `apps` directory here to your local `apps` directory, then add the configuration to enable the `media_lights_sync` module.
 
 ## Prerequisites
 
