@@ -79,6 +79,7 @@ This app has been tested and is working with the following devices:
   - Apple TV ([hass-atv-beta](https://github.com/postlund/hass-atv-beta))
 - **RGB Lights**:
   - Philips Hue
+  - [ESPHome RGB Light](https://esphome.io/components/light/rgb.html) using an ESP8266
   - Z-Wave RGB Light
 
 _If you've found that this app is working with another device, just let me know so I can update this list._
