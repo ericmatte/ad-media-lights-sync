@@ -7,6 +7,7 @@ media_lights_sync:
   media_player: media_player.tv
   photo_attribute: entity_picture
   ha_url: !secret ha_url
+  use_current_brightness: False
   condition:
     entity: input_boolean.sync_tv_lights
     state: "on"
