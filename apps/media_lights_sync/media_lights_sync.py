@@ -18,6 +18,7 @@ class MediaLightsSync(hass.Hass):
   def initialize(self):
     """Initialize the app and listen for media_player photo_attribute changes."""
     self.ha_url = self.args.get("ha_url", None)
+    self.use_current_brightness = self.args.get("use_current_brightness", False)
     self.condition = self.args.get("condition")
     self.lights = self.args["lights"]
     self.listen_state(self.change_lights_color, self.args["media_player"], attribute = self.args.get("photo_attribute", "entity_picture"))
@@ -35,7 +36,10 @@ class MediaLightsSync(hass.Hass):
 
   def set_light_rgb(self, light, color):
     """Change a light color."""
-    self.turn_on(light, rgb_color=color, brightness=255)
+    light_kwargs = { "rgb_color": color }
+    if not self.use_current_brightness:
+        light_kwargs["brightness"] = 255
+    self.turn_on(light, **light_kwargs)
 
   def get_colors(self, url):
     """Get the palette of colors from url."""
