@@ -24,7 +24,7 @@ Use [HACS](https://hacs.xyz/) or download the `media_lights_sync` directory from
 
 ## Prerequisites
 
-In order for this app to work, you need to add the following packages to your main AppDaemon config:
+In order for this app to work, you need to add the following packages to the config of your AppDaemon 4 Supervisor add-on:
 
 ```yaml
 system_packages:
@@ -37,6 +37,15 @@ system_packages:
   - zlib-dev
 python_packages:
   - Pillow
+```
+
+If you are running AppDaemon in your own docker container, you must create and build a docker image with the above dependencies using a [Dockerfile](https://docs.docker.com/engine/reference/builder/) similar to this (**untested**):
+
+```Dockerfile
+FROM acockburn/appdaemon:latest
+# Manually install the dependencies
+RUN apk add musl make g++ python3-dev build-base jpeg-dev zlib-dev
+RUN pip3 install Pillow
 ```
 
 ## App configuration
