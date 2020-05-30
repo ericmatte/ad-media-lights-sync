@@ -94,6 +94,7 @@ This app has been tested and is working with the following devices:
   - Z-Wave
   - Lifx
   - TP-Link
+  - Yeelight (YLDP02YL, YLDD02YL)
 
 _If you've found that this app is working with another device, just let me know so I can update this list._
 
