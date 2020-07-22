@@ -31,6 +31,7 @@ system_packages:
   - musl
   - make
   - g++
+  - python3
   - python3-dev
   - build-base
   - jpeg-dev
