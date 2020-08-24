@@ -28,14 +28,7 @@ In order for this app to work, you need to add the following packages to the con
 
 ```yaml
 system_packages:
-  - musl
-  - make
-  - g++
-  - python3
-  - python3-dev
-  - build-base
-  - jpeg-dev
-  - zlib-dev
+  - py3-pillow
 python_packages:
   - Pillow
 ```
@@ -45,7 +38,7 @@ If you are running AppDaemon in your own docker container, you must create and b
 ```Dockerfile
 FROM acockburn/appdaemon:latest
 # Manually install the dependencies
-RUN apk add musl make g++ python3-dev build-base jpeg-dev zlib-dev
+RUN apk add py3-pillow
 RUN pip3 install Pillow
 ```
 
