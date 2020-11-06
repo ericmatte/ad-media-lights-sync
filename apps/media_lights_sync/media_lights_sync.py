@@ -18,6 +18,7 @@ class MediaLightsSync(hass.Hass):
         self.ha_url = self.args.get("ha_url", None)
         self.use_current_brightness = self.args.get("use_current_brightness", False)
         self.condition = self.args.get("condition")
+        self.transition = self.args.get("transition", None)
         self.lights = self.args["lights"]
         self.use_saturated_colors = self.args.get("use_saturated_colors", False)
 
@@ -42,6 +43,8 @@ class MediaLightsSync(hass.Hass):
             light_kwargs["rgb_color"] = self.get_saturated_color(color)
         if not self.use_current_brightness:
             light_kwargs["brightness"] = 255
+        if self.transition is not None:
+            light_kwargs["transition"] = self.transition
         self.turn_on(light, **light_kwargs)
 
     def get_saturated_color(self, color):
