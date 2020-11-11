@@ -14,23 +14,41 @@ class MediaLightsSync(hass.Hass):
     """MediaLightsSync class."""
 
     def initialize(self):
-        """Initialize the app and listen for media_player photo_attribute changes."""
+        """Initialize the app and listen for media_players photo_attribute changes."""
         self.ha_url = self.args.get("ha_url", None)
         self.use_current_brightness = self.args.get("use_current_brightness", False)
         self.condition = self.args.get("condition")
         self.transition = self.args.get("transition", None)
         self.lights = self.args["lights"]
         self.use_saturated_colors = self.args.get("use_saturated_colors", False)
-
+        self.thumbnails = []
+        
         photo_attribute = self.args.get("photo_attribute", "entity_picture")
-        self.listen_state(self.change_lights_color, self.args["media_player"], attribute=photo_attribute)
+        
+        self.media_players = self.args["media_players"]
+        for i in range(len(self.media_players)):
+            self.listen_state(self.change_lights_color, self.media_players[i], attribute=photo_attribute)
 
     def change_lights_color(self, entity, attribute, oldUrl, newUrl, kwargs):
         """Callback when the photo_attribute has changed."""
+        self.extractThumbnails()
+        colorsLists = []
+        thumbnailsCount = len(self.thumbnails)
         if newUrl != oldUrl and newUrl is not None and self.can_change_colors():
-            rgb_colors = self.get_colors(self.format_ha_url(newUrl))
+            for i in range(thumbnailsCount):
+                colorsLists.append(self.get_colors(self.format_ha_url(self.thumbnails[i])))
+            
             for i in range(len(self.lights)):
-                threading.Thread(target=self.set_light_rgb, args=(self.lights[i], rgb_colors[i])).start()
+                threading.Thread(target=self.set_light_rgb, args=(self.lights[i], colorsLists[i%thumbnailsCount][i])).start()
+
+    def extractThumbnails(self):
+        """Extract pictures from all media players"""
+        for i in range(len(self.media_players)):
+            media_player_entity = self.get_state(self.media_players[i],"all");
+            if "attributes" in media_player_entity:
+                attributes = media_player_entity["attributes"]
+                if "entity_picture" in attributes:
+                    self.thumbnails.append(attributes["entity_picture"])
 
     def can_change_colors(self):
         """Validate that light should be sync if a condition is set."""
@@ -74,3 +92,4 @@ class MediaLightsSync(hass.Hass):
             raise ValueError("ha_url must be specified when using relative url for photo_attribute.")
         else:
             return urljoin(self.ha_url, url)
+
