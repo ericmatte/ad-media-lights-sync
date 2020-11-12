@@ -48,7 +48,9 @@ class MediaLightsSync(hass.Hass):
             if "attributes" in media_player_entity:
                 attributes = media_player_entity["attributes"]
                 if "entity_picture" in attributes:
-                    self.thumbnails.append(attributes["entity_picture"])
+                    picture = attributes["entity_picture"]
+                    if picture is not None:
+                        self.thumbnails.append(picture)
 
     def can_change_colors(self):
         """Validate that light should be sync if a condition is set."""
