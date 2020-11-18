@@ -79,7 +79,8 @@ media_lights_sync:
 
 ## Compatibility
 
-This app has been tested and is working with the following devices:
+This app should work with any `media_player` and RGB light integrations available in Home Assitant.
+That said, it has been tested and is working with the following devices:
 
 - **Media Players**:
   - ChromeCast
