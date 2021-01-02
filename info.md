@@ -6,6 +6,7 @@ media_lights_sync:
   class: MediaLightsSync
   media_player: media_player.tv
   ha_url: !secret ha_url
+  reset_lights_after: true
   use_current_brightness: false
   condition:
     entity: input_boolean.sync_tv_lights
@@ -21,6 +22,7 @@ media_lights_sync:
 | `class`                  | False    | string         | `MediaLightsSync`   | The name of the Class.                                                                                                                                                                          |
 | `media_player`           | False    | string or list |                     | The entity_id(s) of the media player(s) to sync from<sup id="ha-url">[1](#ha-url-note)</sup>.                                                                                                   |
 | `ha_url`                 | True     | string         | `null`              | The URL to your Home Assistant. Only useful if `photo_attribute` is a relative URL<sup id="ha-url">[1](#ha-url-note)</sup>. Examples: `https://my-ha.duckdns.org`, `http://192.168.1.123:8123`. |
+| `reset_lights_after`     | True     | bool           | `false`             | Reset lights to their initial state after turning off a `medial_player`. Will not reset lights if `false`.                                                                                      |
 | `use_saturated_colors`   | True     | bool           | `false`             | Increase the saturation and brightness of the colors.                                                                                                                                           |
 | `use_current_brightness` | True     | bool           | `false`             | Do not change lights brightness. If `false`, it will always sets all lights to maximum brightness.                                                                                              |
 | `transition`             | True     | number         | `null`              | Number that represents the time (in seconds) the light should take to transition to new states.                                                                                                 |
