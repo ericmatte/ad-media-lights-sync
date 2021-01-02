@@ -24,7 +24,9 @@ class MediaLightsSync(hass.Hass):
         self.lights = self.args["lights"]
         self.use_saturated_colors = self.args.get("use_saturated_colors", False)
 
+        self.media_player_callbacks = {}
         media_players = args["media_player"] if isinstance(args["media_player"], list) else [args["media_player"]]
+
         for media_player in media_players:
             for photo_attribute in PICTURE_ATTRIBUTES:
                 self.listen_state(self.change_lights_color, media_player, attribute=photo_attribute)
@@ -32,7 +34,13 @@ class MediaLightsSync(hass.Hass):
     def change_lights_color(self, entity, attribute, oldUrl, newUrl, kwargs):
         """Callback when the photo_attribute has changed."""
         if newUrl != oldUrl and newUrl is not None and self.can_change_colors():
+            current_pictures = [self.get_state(entity, attr) for attr in PICTURE_ATTRIBUTES]
+            if self.media_player_callbacks.get(entity, None) == current_pictures:
+                # Image already processed from another callback
+                return
+
             rgb_colors = self.get_colors(self.format_ha_url(newUrl))
+            self.media_player_callbacks[entity] = current_pictures
             for i in range(len(self.lights)):
                 threading.Thread(target=self.set_light_rgb, args=(self.lights[i], rgb_colors[i])).start()
 
