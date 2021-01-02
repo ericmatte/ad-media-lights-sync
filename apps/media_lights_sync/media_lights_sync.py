@@ -31,6 +31,7 @@ class MediaLightsSync(hass.Hass):
         media_players = args["media_player"] if isinstance(args["media_player"], list) else [args["media_player"]]
 
         for media_player in media_players:
+            self.log("Listening for picture changes on '{entity}'".format(entity=media_player))
             for photo_attribute in PICTURE_ATTRIBUTES:
                 self.listen_state(self.change_lights_color, media_player, attribute=photo_attribute)
 
@@ -45,9 +46,10 @@ class MediaLightsSync(hass.Hass):
             current_pictures = [self.get_state(entity, attr) for attr in PICTURE_ATTRIBUTES]
             if self.media_player_callbacks.get(entity, None) == current_pictures:
                 # Image already processed from another callback
-                return
+                return self.log(log_message.format(entity=entity, attr=attribute+"; skipped"))
 
-            rgb_colors = self.get_colors(self.format_url(new_url))
+            self.log(log_message.format(entity=entity, attr=attribute))
+            rgb_colors = self.get_colors(self.format_url(new_url, entity, attribute))
             self.media_player_callbacks[entity] = current_pictures
             for i in range(len(self.lights)):
                 color = self.get_saturated_color(rgb_colors[i]) if self.use_saturated_colors else rgb_colors[i]
@@ -67,6 +69,7 @@ class MediaLightsSync(hass.Hass):
     def reset_lights(self):
         """Reset lights to their initial state after turning off a medial_player."""
         if self.reset_lights_after and self.initial_lights_states is not None:
+            self.log("Resetting lights\n")
             for i in range(len(self.lights)):
                 state = self.initial_lights_states[i]["state"]
                 attributes = self.initial_lights_states[i]["attributes"]
@@ -80,11 +83,13 @@ class MediaLightsSync(hass.Hass):
             attributes["transition"] = transition
 
         if new_state == "off":
+            self.log("Turn off '{entity}' light".format(entity=entity))
             Thread(target=self.turn_off, args=[entity], kwargs=attributes).start()
         else:
             attributes["rgb_color"] = color
             if brightness is not None:
                 attributes["brightness"] = brightness
+            self.log("Set '{entity}' light:\n{attr}".format(entity=entity, attr=attributes))
             Thread(target=self.turn_on, args=[entity], kwargs=attributes).start()
 
     def get_saturated_color(self, color):
@@ -105,12 +110,12 @@ class MediaLightsSync(hass.Hass):
         """Extract an amount of colors corresponding to the amount of lights in the configuration."""
         return [palette[i:i + 3] for i in range(0, colors * 3, 3)]
 
-    def format_url(self, url):
+    def format_url(self, url, entity, attribute):
         """Append ha_url if this is a relative url"""
         is_relative = not url.startswith("http")
         if not is_relative:
             return url
         elif is_relative and self.ha_url is None:
-            raise ValueError("ha_url must be specified when using relative url for photo_attribute.")
+            raise ValueError("A relative URL was received on '{entity}.{attribute}'.\nha_url must be specified in the configuration for relative URLs.".format(entity=entity, attribute=attribute))
         else:
             return urljoin(self.ha_url, url)
