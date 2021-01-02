@@ -9,6 +9,8 @@ from PIL import Image
 from urllib.parse import urljoin
 from urllib.request import urlopen
 
+PICTURE_ATTRIBUTES = ["entity_picture_local", "entity_picture"]
+
 
 class MediaLightsSync(hass.Hass):
     """MediaLightsSync class."""
@@ -22,11 +24,10 @@ class MediaLightsSync(hass.Hass):
         self.lights = self.args["lights"]
         self.use_saturated_colors = self.args.get("use_saturated_colors", False)
 
-        photo_attribute = self.args.get("photo_attribute", "entity_picture")
         media_players = args["media_player"] if isinstance(args["media_player"], list) else [args["media_player"]]
         for media_player in media_players:
-            self.listen_state(self.change_lights_color, media_player, attribute=photo_attribute)
-
+            for photo_attribute in PICTURE_ATTRIBUTES:
+                self.listen_state(self.change_lights_color, media_player, attribute=photo_attribute)
 
     def change_lights_color(self, entity, attribute, oldUrl, newUrl, kwargs):
         """Callback when the photo_attribute has changed."""
