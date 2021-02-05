@@ -42,7 +42,7 @@ RUN apk add py3-pillow
 RUN pip3 install Pillow
 ```
 
-## App configuration
+## App configuration (`config/appdaemon/apps/apps.yaml`)
 
 ```yaml
 media_lights_sync:
