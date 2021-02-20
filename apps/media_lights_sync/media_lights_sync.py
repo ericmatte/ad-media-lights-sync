@@ -8,6 +8,7 @@ from threading import Thread
 from PIL import Image
 from urllib.parse import urljoin
 from urllib.request import urlopen
+from urllib.error import HTTPError
 
 PICTURE_ATTRIBUTES = ["entity_picture_local", "entity_picture"]
 
@@ -44,12 +45,19 @@ class MediaLightsSync(hass.Hass):
             self.store_initial_lights_states()
             log_message = "New picture received from '{entity}' ({attr})\n"
             current_pictures = [self.get_state(entity, attr) for attr in PICTURE_ATTRIBUTES]
+
             if self.media_player_callbacks.get(entity, None) == current_pictures:
                 # Image already processed from another callback
                 return self.log(log_message.format(entity=entity, attr=attribute+"; skipped"))
-
             self.log(log_message.format(entity=entity, attr=attribute))
-            rgb_colors = self.get_colors(self.format_url(new_url, entity, attribute))
+            
+            try:
+                url = self.format_url(new_url, entity, attribute)
+                rgb_colors = self.get_colors(url)
+            except HTTPError as error:
+                self.error("Unable to fetch artwork: {error}\nURL: {url}\n".format(url=url, error=error))
+                return
+
             self.media_player_callbacks[entity] = current_pictures
             for i in range(len(self.lights)):
                 color = self.get_saturated_color(rgb_colors[i]) if self.use_saturated_colors else rgb_colors[i]
