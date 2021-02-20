@@ -83,6 +83,7 @@ class MediaLightsSync(hass.Hass):
                 attributes = self.initial_lights_states[i]["attributes"]
                 self.set_light(state.lower(), self.lights[i], color=attributes.get("rgb_color", None), brightness=attributes.get("brightness", None), transition=self.transition)
             self.initial_lights_states = None
+            self.media_player_callbacks = {}
 
     def set_light(self, new_state, entity, color=None, brightness=None, transition=None):
         """Change the color of a light."""
