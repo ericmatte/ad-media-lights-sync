@@ -47,6 +47,7 @@ RUN pip3 install Pillow
 ## App configuration
 
 `config/appdaemon/apps/apps.yaml`
+
 ```yaml
 media_lights_sync:
   module: media_lights_sync
@@ -64,22 +65,36 @@ media_lights_sync:
     state: "on"
 ```
 
-| key                      | optional | type           | default             | description                                                                                                |
-| ------------------------ | -------- | -------------- | ------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `module`                 | False    | string         | `media_lights_sync` | The module name of the app.                                                                                |
-| `class`                  | False    | string         | `MediaLightsSync`   | The name of the Class.                                                                                     |
-| `media_player`           | False    | string or list |                     | The entity_id(s) of the media player(s) to sync from<sup id="ha-url">[1](#ha-url-note)</sup>.              |
-| `lights`                 | False    | list           |                     | The list of all the lights entity_id to sync to.                                                           |
-| `ha_url`                 | True     | string         | `null`              | The URL to your Home Assistant. Examples: `https://my-ha.duckdns.org`, `http://192.168.1.123:8123`.        |
-| `reset_lights_after`     | True     | bool           | `false`             | Reset lights to their initial state after turning off a `medial_player`. Will not reset lights if `false`. |
-| `use_saturated_colors`   | True     | bool           | `false`             | Increase the saturation and brightness of the colors.                                                      |
-| `use_current_brightness` | True     | bool           | `false`             | Do not change lights brightness. If `false`, it will always sets all lights to maximum brightness.         |
-| `transition`             | True     | number         | `null`              | Number that represents the time (in seconds) the light should take to transition to new states.            |
-| `condition`              | True     | object         |                     | Sync lights only if the state of the condition entity is valid.                                            |
-| `condition.entity`       | False    | string         |                     | The entity_id of the condition.                                                                            |
-| `condition.state`        | False    | string         |                     | The state to match in order for the lights to sync.                                                        |
+| key                      | optional | type           | default             | description                                                                                                                 |
+| ------------------------ | -------- | -------------- | ------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `module`                 | False    | string         | `media_lights_sync` | The module name of the app.                                                                                                 |
+| `class`                  | False    | string         | `MediaLightsSync`   | The name of the Class.                                                                                                      |
+| `media_player`           | False    | string or list |                     | The entity_id(s) of the media player(s) to sync from<sup id="ha-url">[1](#ha-url-note)</sup>.                               |
+| `lights`                 | False    | list           |                     | The list of all the lights entity_id to sync to.                                                                            |
+| `ha_url`                 | True     | string         | `null`              | The URL to your Home Assistant. Examples: `https://my-ha.duckdns.org`, `http://192.168.1.123:8123`.                         |
+| `reset_lights_after`     | True     | bool           | `false`             | Reset lights to their initial state after turning off a `medial_player`. Will not reset lights if `false`.                  |
+| `quantization_method`    | True     | string         | `MedianCut`         | Supports `MedianCut`, `FastOctree`, `MaxCoverage` and `libimagequant`. More info [below](#selecting-a-quantization-method). |
+| `use_saturated_colors`   | True     | bool           | `false`             | Increase the saturation and brightness of the colors.                                                                       |
+| `use_current_brightness` | True     | bool           | `false`             | Do not change lights brightness. If `false`, it will always sets all lights to maximum brightness.                          |
+| `transition`             | True     | number         | `null`              | Number that represents the time (in seconds) the light should take to transition to new states.                             |
+| `condition`              | True     | object         |                     | Sync lights only if the state of the condition entity is valid.                                                             |
+| `condition.entity`       | False    | string         |                     | The entity_id of the condition.                                                                                             |
+| `condition.state`        | False    | string         |                     | The state to match in order for the lights to sync.                                                                         |
 
 <b id="ha-url-note">[1](#ha-url)</b>: See `/developer-tools/state` in your Home Assistant instance. This app will listen to changes on `entity_picture_local` and/or `entity_picture` attributes of your `media_player` entities.
+
+## Selecting a `quantization_method`
+
+Change this option to select the [quantization method](https://pillow.readthedocs.io/en/stable/reference/Image.html?highlight=getpalette#quantization-methods) used for the colors extraction.
+
+There is four options available, which change the way the colors palette is extracted:
+
+- `MedianCut`: Default method. Mix the colors in the image using their median value.
+- `FastOctree`: Extract dominant colors. Use this option if you want more accurate colors.
+- `MaxCoverage`: Mix the colors based on their maximum coverage.
+- `libimagequant`: High-quality conversion of RGBA images to 8-bit indexed-color (palette) images.
+
+Alternatively, you can also combine this option with `use_saturated_colors` to get more vibrant colors.
 
 ## Compatibility
 
