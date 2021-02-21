@@ -85,13 +85,11 @@ media_lights_sync:
 
 ## Selecting a `quantization_method`
 
-Change this option to select the [quantization method](https://pillow.readthedocs.io/en/stable/reference/Image.html?highlight=getpalette#quantization-methods) used for the colors extraction.
+There is four [quantization method](https://pillow.readthedocs.io/en/stable/reference/Image.html?highlight=getpalette#quantization-methods) available, which change the way the colors palette is extracted:
 
-There is four options available, which change the way the colors palette is extracted:
-
-- `MedianCut`: Default method. Mix the colors in the image using their median value.
+- `MedianCut`: Default method. Mix colors in the image using their median value.
 - `FastOctree`: Extract dominant colors. Use this option if you want more accurate colors.
-- `MaxCoverage`: Mix the colors based on their maximum coverage.
+- `MaxCoverage`: Mix colors based on their maximum coverage.
 - `libimagequant`: High-quality conversion of RGBA images to 8-bit indexed-color (palette) images.
 
 Alternatively, you can also combine this option with `use_saturated_colors` to get more vibrant colors.
