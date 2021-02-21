@@ -5,13 +5,12 @@ import io
 import colorsys
 
 from threading import Thread
-from PIL import Image
+from PIL import Image, features
 from urllib.parse import urljoin
 from urllib.request import urlopen
 from urllib.error import HTTPError
 
 PICTURE_ATTRIBUTES = ["entity_picture_local", "entity_picture"]
-
 
 class MediaLightsSync(hass.Hass):
     """MediaLightsSync class."""
@@ -26,6 +25,7 @@ class MediaLightsSync(hass.Hass):
         self.reset_lights_after = args.get("reset_lights_after", False)
         self.use_saturated_colors = args.get("use_saturated_colors", False)
         self.brightness = None if args.get("use_current_brightness", False) else 255
+        self.quantization_method = self.get_quantization_method(args.get("quantization_method", None))
 
         self.media_player_callbacks = {}
         self.initial_lights_states = None
@@ -112,8 +112,24 @@ class MediaLightsSync(hass.Hass):
         fd = urlopen(url)
         f = io.BytesIO(fd.read())
         im = Image.open(f)
-        palette = im.quantize(colors=len(self.lights)).getpalette()
+        palette = im.quantize(colors=len(self.lights), method=self.quantization_method).getpalette()
         return self.extract_colors(palette, len(self.lights))
+    
+    def get_quantization_method(self, value):
+        method = None
+        if value == "FastOctree":
+            method = Image.FASTOCTREE
+        elif value == "MedianCut":
+            method = Image.MEDIANCUT
+        elif value == "MaxCoverage":
+            method = Image.MAXCOVERAGE
+        elif value == "libimagequant":
+            if features.check_feature(feature="libimagequant"):
+                method = Image.LIBIMAGEQUANT
+            else:
+                self.log("Quantization method 'libimagequant' is unsupported by your platform.")
+        self.log("Using {method} quantization method".format(method="default (MedianCut)" if method is None else value))
+        return Image.MEDIANCUT if method is None else method
 
     def extract_colors(self, palette, colors):
         """Extract an amount of colors corresponding to the amount of lights in the configuration."""
