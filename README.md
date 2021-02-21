@@ -73,7 +73,7 @@ media_lights_sync:
 | `lights`                 | False    | list           |                     | The list of all the lights entity_id to sync to.                                                                            |
 | `ha_url`                 | True     | string         | `null`              | The URL to your Home Assistant. Examples: `https://my-ha.duckdns.org`, `http://192.168.1.123:8123`.                         |
 | `reset_lights_after`     | True     | bool           | `false`             | Reset lights to their initial state after turning off a `medial_player`. Will not reset lights if `false`.                  |
-| `quantization_method`    | True     | string         | `MedianCut`         | Supports `MedianCut`, `FastOctree`, `MaxCoverage` and `libimagequant`. More info [below](#selecting-a-quantization-method). |
+| `quantization_method`    | True     | string         | `MedianCut`         | Supports `MedianCut`, `FastOctree`, `MaxCoverage` and `libimagequant`. More info [below](#selecting-a-quantization_method). |
 | `use_saturated_colors`   | True     | bool           | `false`             | Increase the saturation and brightness of the colors.                                                                       |
 | `use_current_brightness` | True     | bool           | `false`             | Do not change lights brightness. If `false`, it will always sets all lights to maximum brightness.                          |
 | `transition`             | True     | number         | `null`              | Number that represents the time (in seconds) the light should take to transition to new states.                             |
