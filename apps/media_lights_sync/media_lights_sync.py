@@ -49,8 +49,8 @@ class MediaLightsSync(hass.Hass):
 
             if self.media_player_callbacks.get(entity, None) == current_pictures:
                 # Image already processed from another callback
-                return self.log(log_message.format(entity=entity, attr=attribute+"; skipped"))
-            self.log(log_message.format(entity=entity, attr=attribute))
+                return self.log(log_message.format(entity=entity, attribute=attribute + "; skipped"))
+            self.log(log_message.format(entity=entity, attribute=attribute))
 
             try:
                 url = self.format_url(new_url, entity, attribute)
