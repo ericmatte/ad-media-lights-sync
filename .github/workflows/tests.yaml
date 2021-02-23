@@ -1,0 +1,40 @@
+name: Tests
+
+on:
+  push:
+
+jobs:
+  validate:
+    name: Validate HACS App
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Checkout
+        uses: "actions/checkout@v2"
+
+      - name: HACS validation
+        uses: "hacs/action@main"
+        with:
+          category: "appdaemon"
+          comment: "false"
+
+  tests:
+    name: Tests & Linting
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Checkout
+        uses: "actions/checkout@v2"
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run pytest
+        run: pytest
+
+      - name: Run linting with autopep8
+        if: always()
+        run: autopep8 --diff --recursive --exit-code .

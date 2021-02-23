@@ -1,12 +1,10 @@
 # Media Player Lights Sync
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs) [![](https://img.shields.io/github/release/ericmatte/ad-media-lights-sync/all.svg?style=for-the-badge)](https://github.com/ericmatte/ad-media-lights-sync/releases)
-
-<a href="https://www.buymeacoffee.com/ericmatte" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
-
 _AppDaemon App that synchronizes the color of RGB lights with the thumbnail of a media player in Home Assistant._
 
----
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs) [![](https://img.shields.io/github/release/ericmatte/ad-media-lights-sync/all.svg?style=for-the-badge)](https://github.com/ericmatte/ad-media-lights-sync/releases) [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ericmatte/ad-media-lights-sync/Tests?style=for-the-badge)](https://github.com/ericmatte/ad-media-lights-sync/actions)
+
+<a href="https://www.buymeacoffee.com/ericmatte" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
 
 <img src="https://github.com/ericmatte/ad-media-lights-sync/raw/master/examples/example-1.jpg" alt="Example 1" width="400"> <img src="https://github.com/ericmatte/ad-media-lights-sync/raw/master/examples/example-2.jpg" alt="Example 1" width="400">
 

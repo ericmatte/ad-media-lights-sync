@@ -12,7 +12,12 @@ The app shall remain simple with that focused task in mind.
 ## Local development
 
 1. Clone this repository.
-1. Copy the `ad-media-lights-sync` folder into `appdaemon/apps/` on your Home Assistant instance.
+1. Run `pip3 install -r requirements.txt`.
+1. Edit code, add tests and run `pytest`.
+
+### Testing on a Home Assistant instance
+
+1. Copy the [`media_lights_sync`](./apps/media_lights_sync) folder into `appdaemon/apps/` on your Home Assistant instance.
 1. Update `appdaemon/apps/apps.yaml` with the proper configuration for your setup (see [`info.md`](./info.md)).
 
 ## Pull Request Process
