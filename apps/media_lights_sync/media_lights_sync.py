@@ -50,7 +50,7 @@ class MediaLightsSync(hass.Hass):
                 # Image already processed from another callback
                 return self.log(log_message.format(entity=entity, attr=attribute+"; skipped"))
             self.log(log_message.format(entity=entity, attr=attribute))
-            
+
             try:
                 url = self.format_url(new_url, entity, attribute)
                 rgb_colors = self.get_colors(url)
@@ -112,9 +112,18 @@ class MediaLightsSync(hass.Hass):
         fd = urlopen(url)
         f = io.BytesIO(fd.read())
         im = Image.open(f)
+        if im.mode == "RGBA" and self.quantization_method not in [None, Image.FASTOCTREE, Image.LIBIMAGEQUANT]:
+            im = self.convert_rgba_to_rgb(im)
+
         palette = im.quantize(colors=len(self.lights), method=self.quantization_method).getpalette()
         return self.extract_colors(palette, len(self.lights))
-    
+
+    def convert_rgba_to_rgb(self, rgba_image):
+        rgba_image.load()  # required for png.split()
+        rgb_image = Image.new("RGB", rgba_image.size, (255, 255, 255))
+        rgb_image.paste(rgba_image, mask=rgba_image.split()[3])  # 3 is the alpha channel
+        return rgb_image
+
     def get_quantization_method(self, value):
         method = None
         if value == "FastOctree":
@@ -128,8 +137,8 @@ class MediaLightsSync(hass.Hass):
                 method = Image.LIBIMAGEQUANT
             else:
                 self.log("Quantization method 'libimagequant' is unsupported by your platform.")
-        self.log("Using {method} quantization method".format(method="default (MedianCut)" if method is None else value))
-        return Image.MEDIANCUT if method is None else method
+        self.log("Using {method} quantization method".format(method="default" if method is None else value))
+        return method
 
     def extract_colors(self, palette, colors):
         """Extract an amount of colors corresponding to the amount of lights in the configuration."""
