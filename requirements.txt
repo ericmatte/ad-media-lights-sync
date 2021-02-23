@@ -1,0 +1,4 @@
+appdaemontestframework
+autopep8
+pytest
+Pillow

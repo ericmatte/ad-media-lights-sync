@@ -6,11 +6,12 @@ import colorsys
 
 from threading import Thread
 from PIL import Image, features
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 from urllib.request import urlopen
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 
 PICTURE_ATTRIBUTES = ["entity_picture_local", "entity_picture"]
+
 
 class MediaLightsSync(hass.Hass):
     """MediaLightsSync class."""
@@ -43,18 +44,18 @@ class MediaLightsSync(hass.Hass):
 
         if new_url is not None:
             self.store_initial_lights_states()
-            log_message = "New picture received from '{entity}' ({attr})\n"
-            current_pictures = [self.get_state(entity, attr) for attr in PICTURE_ATTRIBUTES]
+            log_message = "New picture received from '{entity}' ({attribute})\n"
+            current_pictures = [self.get_state(entity, attribute=attribute) for attribute in PICTURE_ATTRIBUTES]
 
             if self.media_player_callbacks.get(entity, None) == current_pictures:
                 # Image already processed from another callback
-                return self.log(log_message.format(entity=entity, attr=attribute+"; skipped"))
-            self.log(log_message.format(entity=entity, attr=attribute))
+                return self.log(log_message.format(entity=entity, attribute=attribute + "; skipped"))
+            self.log(log_message.format(entity=entity, attribute=attribute))
 
             try:
                 url = self.format_url(new_url, entity, attribute)
                 rgb_colors = self.get_colors(url)
-            except HTTPError as error:
+            except (HTTPError, URLError) as error:
                 self.error("Unable to fetch artwork: {error}\nURL: {url}\n".format(url=url, error=error))
                 return
 
@@ -81,7 +82,8 @@ class MediaLightsSync(hass.Hass):
             for i in range(len(self.lights)):
                 state = self.initial_lights_states[i]["state"]
                 attributes = self.initial_lights_states[i]["attributes"]
-                self.set_light(state.lower(), self.lights[i], color=attributes.get("rgb_color", None), brightness=attributes.get("brightness", None), transition=self.transition)
+                self.set_light(state.lower(), self.lights[i], color=attributes.get("rgb_color", None),
+                               brightness=attributes.get("brightness", None), transition=self.transition)
             self.initial_lights_states = None
             self.media_player_callbacks = {}
 
@@ -98,7 +100,7 @@ class MediaLightsSync(hass.Hass):
             attributes["rgb_color"] = color
             if brightness is not None:
                 attributes["brightness"] = brightness
-            self.log("Set '{entity}' light:\n{attr}".format(entity=entity, attr=attributes))
+            self.log("Set '{entity}' light:\n{attributes}".format(entity=entity, attributes=attributes))
             Thread(target=self.turn_on, args=[entity], kwargs=attributes).start()
 
     def get_saturated_color(self, color):
@@ -146,10 +148,11 @@ class MediaLightsSync(hass.Hass):
 
     def format_url(self, url, entity, attribute):
         """Append ha_url if this is a relative url"""
-        is_relative = not url.startswith("http")
-        if not is_relative:
+        is_absolute = bool(urlparse(url).netloc) or url.startswith("file:///")
+        if is_absolute:
             return url
-        elif is_relative and self.ha_url is None:
-            raise ValueError("A relative URL was received on '{entity}.{attribute}'.\nha_url must be specified in the configuration for relative URLs.".format(entity=entity, attribute=attribute))
+        elif not is_absolute and self.ha_url is None:
+            raise ValueError("A relative URL was received on '{entity}.{attribute}'.\nha_url must be specified in the configuration for relative URLs.".format(
+                entity=entity, attribute=attribute))
         else:
             return urljoin(self.ha_url, url)
