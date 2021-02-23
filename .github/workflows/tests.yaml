@@ -2,6 +2,9 @@ name: Tests
 
 on:
   push:
+  pull_request:
+  schedule:	
+    - cron: "0 0 * * 6"
 
 jobs:
   validate:
@@ -11,11 +14,16 @@ jobs:
       - name: Checkout
         uses: "actions/checkout@v2"
 
+      - name: Ignore issues and topics for non-main branch
+        if: github.ref != 'refs/heads/master'
+        run: echo 'IGNORE=issues topics' >> "$GITHUB_ENV"
+
       - name: HACS validation
         uses: "hacs/action@main"
         with:
           category: "appdaemon"
           comment: "false"
+          ignore: "${{ env.IGNORE }}"
 
   tests:
     name: Tests & Linting
