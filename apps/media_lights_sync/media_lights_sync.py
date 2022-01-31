@@ -3,6 +3,7 @@ import appdaemon.plugins.hass.hassapi as hass
 import sys
 import io
 import colorsys
+import ssl
 
 from threading import Thread
 from PIL import Image, features
@@ -21,6 +22,7 @@ class MediaLightsSync(hass.Hass):
         args = self.args
         self.lights = args["lights"]
         self.ha_url = args.get("ha_url", None)
+        self.verify_cert = args.get("verify_cert", True)
         self.condition = args.get("condition")
         self.transition = args.get("transition", None)
         self.reset_lights_after = args.get("reset_lights_after", False)
@@ -111,7 +113,8 @@ class MediaLightsSync(hass.Hass):
 
     def get_colors(self, url):
         """Get the palette of colors from url."""
-        fd = urlopen(url)
+        context = ssl.SSLContext() if not self.verify_cert else None
+        fd = urlopen(url, context=context)
         f = io.BytesIO(fd.read())
         im = Image.open(f)
         if im.mode == "RGBA" and self.quantization_method not in [None, Image.FASTOCTREE, Image.LIBIMAGEQUANT]:
