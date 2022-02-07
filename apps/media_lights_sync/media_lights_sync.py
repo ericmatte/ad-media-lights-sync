@@ -28,6 +28,16 @@ class MediaLightsSync(hass.Hass):
         self.brightness = None if args.get("use_current_brightness", False) else 255
         self.quantization_method = self.get_quantization_method(args.get("quantization_method", None))
 
+        self.current_picture_url = None
+        self.current_entity = None
+        self.current_attribute = None
+
+        if self.condition is None:
+            self.can_change_colors = True
+        else:
+            self.can_change_colors = False
+            self.listen_state(self.condition_updated, self.condition["entity"], immediate=True)
+
         self.media_player_callbacks = {}
         self.initial_lights_states = None
         media_players = args["media_player"] if isinstance(args["media_player"], list) else [args["media_player"]]
@@ -35,40 +45,44 @@ class MediaLightsSync(hass.Hass):
         for media_player in media_players:
             self.log("Listening for picture changes on '{entity}'".format(entity=media_player))
             for photo_attribute in PICTURE_ATTRIBUTES:
-                self.listen_state(self.change_lights_color, media_player, attribute=photo_attribute)
+                self.listen_state(self.change_lights_color, media_player, attribute=photo_attribute, immediate=True)
+
+    def condition_updated(self, entity, attribute, old_value, new_value, kwargs):
+        self.log("condition updated: {entity} = {attribute}".format(entity=entity, attribute=new_value))
+        self.can_change_colors = new_value == self.condition["state"]
+
+        self.update_lights_color()
 
     def change_lights_color(self, entity, attribute, old_url, new_url, kwargs):
         """Callback when a entity_picture has changed."""
-        if new_url == old_url or not self.can_change_colors():
+        if new_url == old_url:
             return
 
-        if new_url is not None:
-            self.store_initial_lights_states()
-            log_message = "New picture received from '{entity}' ({attribute})\n"
-            current_pictures = [self.get_state(entity, attribute=attribute) for attribute in PICTURE_ATTRIBUTES]
+        log_message = "New picture received from '{entity}' ({attribute})\n"
+        self.log(log_message.format(entity=entity, attribute=attribute))
 
-            if self.media_player_callbacks.get(entity, None) == current_pictures:
-                # Image already processed from another callback
-                return self.log(log_message.format(entity=entity, attribute=attribute + "; skipped"))
-            self.log(log_message.format(entity=entity, attribute=attribute))
+        self.current_picture_url = new_url
+        self.current_entity = entity
+        self.current_attribute = attribute
 
-            try:
-                url = self.format_url(new_url, entity, attribute)
-                rgb_colors = self.get_colors(url)
-            except (HTTPError, URLError) as error:
-                self.error("Unable to fetch artwork: {error}\nURL: {url}\n".format(url=url, error=error))
-                return
+        self.update_lights_color()
 
-            self.media_player_callbacks[entity] = current_pictures
-            for i in range(len(self.lights)):
-                color = self.get_saturated_color(rgb_colors[i]) if self.use_saturated_colors else rgb_colors[i]
-                self.set_light("on", self.lights[i], color=color, brightness=self.brightness, transition=self.transition)
-        else:
-            self.reset_lights()
+    def update_lights_color(self):
+        if self.current_picture_url is None or not self.can_change_colors:
+            return self.reset_lights()
 
-    def can_change_colors(self):
-        """Validate that light should be sync if a condition is set."""
-        return self.condition is None or self.get_state(self.condition["entity"]) == self.condition["state"]
+        self.store_initial_lights_states()
+
+        try:
+            url = self.format_url(self.current_picture_url, self.current_entity, self.current_attribute)
+            rgb_colors = self.get_colors(url)
+        except (HTTPError, URLError) as error:
+            self.error("Unable to fetch artwork: {error}\nURL: {url}\n".format(url=url, error=error))
+            return
+
+        for i in range(len(self.lights)):
+            color = self.get_saturated_color(rgb_colors[i]) if self.use_saturated_colors else rgb_colors[i]
+            self.set_light("on", self.lights[i], color=color, brightness=self.brightness, transition=self.transition)
 
     def store_initial_lights_states(self):
         """Save the initial state of all lights if not already done."""
