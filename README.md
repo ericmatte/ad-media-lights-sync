@@ -22,7 +22,8 @@ Use [HACS](https://hacs.xyz/) or download the `media_lights_sync` directory from
 
 ## Prerequisites
 
-### HASSOS
+### HassOS (recommended method)
+
 In order for this app to work, you need to add `py3-pillow` and `Pillow` to the config of your AppDaemon 4 Supervisor add-on:
 
 ```yaml
