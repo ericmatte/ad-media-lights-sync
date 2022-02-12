@@ -84,12 +84,14 @@ class MediaLightsSync(hass.Hass):
             for i in range(len(self.lights)):
                 state = self.initial_lights_states[i]["state"]
                 attributes = self.initial_lights_states[i]["attributes"]
-                self.set_light(state.lower(), self.lights[i], color=attributes.get("rgb_color", None),
+                color_attr = "color_temp" if attributes.get("color_mode", "rgb") == "color_temp" else "rgb_color"
+
+                self.set_light(state.lower(), self.lights[i], color_attr=color_attr, color=attributes.get(color_attr, None),
                                brightness=attributes.get("brightness", None), transition=self.transition)
             self.initial_lights_states = None
             self.media_player_callbacks = {}
 
-    def set_light(self, new_state, entity, color=None, brightness=None, transition=None):
+    def set_light(self, new_state, entity, color_attr="rgb_color", color=None, brightness=None, transition=None):
         """Change the color of a light."""
         attributes = {}
         if transition is not None:
@@ -99,7 +101,7 @@ class MediaLightsSync(hass.Hass):
             self.log("Turn off '{entity}' light".format(entity=entity))
             Thread(target=self.turn_off, args=[entity], kwargs=attributes).start()
         else:
-            attributes["rgb_color"] = color
+            attributes[color_attr] = color
             if brightness is not None:
                 attributes["brightness"] = brightness
             self.log("Set '{entity}' light:\n{attributes}".format(entity=entity, attributes=attributes))
