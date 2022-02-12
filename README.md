@@ -70,6 +70,7 @@ media_lights_sync:
 | `media_player`           | False    | string or list |                     | The entity_id(s) of the media player(s) to sync from<sup id="ha-url">[1](#ha-url-note)</sup>.                               |
 | `lights`                 | False    | list           |                     | The list of all the lights entity_id to sync to.                                                                            |
 | `ha_url`                 | True     | string         | `null`              | The URL to your Home Assistant. Examples: `https://my-ha.duckdns.org`, `http://192.168.1.123:8123`.                         |
+| `verify_cert`            | True     | bool           | `true`              | Set to `false` if you are using `https` on your `ha-url` but are unable to trust the certificate. Bypasses cert validation. |
 | `reset_lights_after`     | True     | bool           | `false`             | Reset lights to their initial state after turning off a `medial_player`. Will not reset lights if `false`.                  |
 | `quantization_method`    | True     | string         | `MedianCut`         | Supports `MedianCut`, `FastOctree`, `MaxCoverage` and `libimagequant`. More info [below](#selecting-a-quantization_method). |
 | `use_saturated_colors`   | True     | bool           | `false`             | Increase the saturation and brightness of the colors.                                                                       |
