@@ -189,6 +189,20 @@ class TestResetLights:
         assert_that('light.test_light_1').was.turned_on(brightness=255, rgb_color=[59, 180, 180])
         assert_that('light.test_light_2').was.turned_on(brightness=255, rgb_color=[46, 56, 110])
 
+    def test_can_reset_color_modes(self, assert_that, media_player, given_that, update_passed_args, hass_mocks):
+        with update_passed_args():
+            given_that.passed_arg('reset_lights_after').is_set_to(True)
+        given_that.state_of('light.test_light_1').is_set_to('on', {'color_mode': 'color_temp', 'color_temp': 500, 'brightness': 150})
+        given_that.state_of('light.test_light_2').is_set_to('on', {'color_mode': 'xy', 'xy_color': [0.166, 0.269], 'brightness': 100})
+
+        media_player('media_player.tv_test').update_state('playing', {"entity_picture": rgb_images[0]})
+        given_that.mock_functions_are_cleared()
+
+        media_player('media_player.tv_test').update_state('idle')
+
+        assert_that('light.test_light_1').was.turned_on(color_temp=500, brightness=150)
+        assert_that('light.test_light_2').was.turned_on(xy_color=[0.166, 0.269], brightness=100)
+
 
 class TestURLErrors:
     def test_url_error_are_handled(self, media_player, hass_errors, hass_mocks):

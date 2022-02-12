@@ -13,6 +13,11 @@ from urllib.error import HTTPError, URLError
 
 PICTURE_ATTRIBUTES = ["entity_picture_local", "entity_picture"]
 
+COLOR_MODES = {
+    "xy": "xy_color",
+    "color_temp": "color_temp",
+}
+
 
 class MediaLightsSync(hass.Hass):
     """MediaLightsSync class."""
@@ -84,14 +89,14 @@ class MediaLightsSync(hass.Hass):
             for i in range(len(self.lights)):
                 state = self.initial_lights_states[i]["state"]
                 attributes = self.initial_lights_states[i]["attributes"]
-                color_attr = "color_temp" if attributes.get("color_mode", "rgb") == "color_temp" else "rgb_color"
+                color_attr = COLOR_MODES.get(attributes.get("color_mode", None), "rgb_color")
 
-                self.set_light(state.lower(), self.lights[i], color_attr=color_attr, color=attributes.get(color_attr, None),
+                self.set_light(state.lower(), self.lights[i], color=attributes.get(color_attr, None), color_attr=color_attr,
                                brightness=attributes.get("brightness", None), transition=self.transition)
             self.initial_lights_states = None
             self.media_player_callbacks = {}
 
-    def set_light(self, new_state, entity, color_attr="rgb_color", color=None, brightness=None, transition=None):
+    def set_light(self, new_state, entity, color=None, color_attr="rgb_color", brightness=None, transition=None):
         """Change the color of a light."""
         attributes = {}
         if transition is not None:
