@@ -33,14 +33,11 @@ init_commands: []
 log_level: info
 ```
 
-If you are running AppDaemon in your own docker container, you must create and build a docker image with the above dependencies using a [Dockerfile](https://docs.docker.com/engine/reference/builder/) similar to this (**untested**):
+### AppDaemon 4 in Docker
 
-```Dockerfile
-FROM acockburn/appdaemon:latest
-# Manually install the dependencies
-RUN apk add py3-pillow
-RUN pip3 install Pillow
-```
+See [AppDaemon with Docker](https://appdaemon.readthedocs.io/en/latest/DOCKER_TUTORIAL.html).
+
+Using the files from [./docker](./docker) in your CONF path, the Docker script will recursively search the CONF directory and install the `system_packages.txt` and `requirements.txt` files.
 
 ## App configuration
 
