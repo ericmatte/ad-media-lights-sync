@@ -14,6 +14,7 @@ from urllib.error import HTTPError, URLError
 PICTURE_ATTRIBUTES = ["entity_picture_local", "entity_picture"]
 
 COLOR_MODES = {
+    "rgb": "rgb_color",
     "xy": "xy_color",
     "color_temp": "color_temp",
 }
