@@ -1,0 +1,3 @@
+py3-pillow
+jpeg-dev
+zlib-dev
