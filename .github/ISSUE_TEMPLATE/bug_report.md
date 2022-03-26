@@ -16,7 +16,6 @@ A clear and concise description of what the bug is.
 Steps to reproduce the behavior:
 1. Go to '...'
 2. Click on '....'
-3. Scroll down to '....'
 4. See error
 
 ### Expected behavior
@@ -34,6 +33,8 @@ If applicable, add screenshots to help explain your problem.
 - Home Assistant: <!--[e.g. 108.6]-->
 - AppDaemon: <!--[e.g. 4.0.3]-->
 
-### Additional context
+### App configuration (from you `apps.yaml`)
 
-Add any other context about the problem here.
+```yaml
+
+```
