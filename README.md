@@ -102,6 +102,7 @@ That said, it has been tested and is working with the following devices:
   - All Amazon media players (Fire TV, Echo Dot, Echo Show, etc.)
   - [Spotify Integration](https://www.home-assistant.io/integrations/spotify/)
   - [Logitech Squeezebox](https://www.home-assistant.io/integrations/squeezebox/)
+  - Plex Media Player
 - **RGB Lights**:
   - Philips Hue
   - [ESPHome RGB Light](https://esphome.io/components/light/rgb.html) using an ESP8266
