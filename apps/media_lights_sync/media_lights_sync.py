@@ -79,7 +79,12 @@ class MediaLightsSync(hass.Hass):
 
     def can_change_colors(self):
         """Validate that light should be sync if a condition is set."""
-        return self.condition is None or self.get_state(self.condition["entity"]) == self.condition["state"]
+        if self.condition is None:
+            return True
+        elif "value_template" in self.condition:
+            return self.render_template(self.condition["value_template"]) == True
+        else:
+            return self.get_state(self.condition["entity"]) == self.condition["state"]
 
     def store_initial_lights_states(self):
         """Save the initial state of all lights if not already done."""

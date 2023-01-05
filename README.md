@@ -79,6 +79,17 @@ media_lights_sync:
 
 <b id="ha-url-note">[1](#ha-url)</b>: See `/developer-tools/state` in your Home Assistant instance. This app will listen to changes on `entity_picture_local` and/or `entity_picture` attributes of your `media_player` entities.
 
+### Using a more complex `condition`
+
+You can use a template condition to match more complex states:
+
+```yaml
+condition:
+  value_template: "{{ state_attr('media_player.tv', 'media_content_type') == 'movie' and is_state('sun.sun', 'below_horizon') }}"
+```
+
+The app will run if the condition returns `True`.
+
 ## Selecting a `quantization_method`
 
 There is four [quantization method](https://pillow.readthedocs.io/en/stable/reference/Image.html?highlight=getpalette#quantization-methods) available, which change the way the colors palette is extracted:
