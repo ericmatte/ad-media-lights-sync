@@ -9,13 +9,23 @@ from PIL import Image
 
 test_light_1_base_state = {'brightness': 50, 'rgb_color': [123, 123, 123]}
 
+
+def image_path(relative_path):
+    return os.path.abspath("./tests/mocks/" + relative_path)
+
+
 rgb_images = [
-    "file://" + os.path.abspath("./examples/example-1.jpg"),
-    "file://" + os.path.abspath("./examples/example-2.jpg"),
+    "file://" + image_path("../../examples/example-1.jpg"),
+    "file://" + image_path("../../examples/example-2.jpg"),
 ]
 rgba_images = {
-    "4kBigFile": "file://" + os.path.abspath("./tests/rgba_4k.png"),
-    "nyanCat": "file://" + os.path.abspath("./tests/rgba_nyan_cat.png"),
+    "4kBigFile": "file://" + image_path("rgba_4k.png"),
+    "nyanCat": "file://" + image_path("rgba_nyan_cat.png"),
+}
+color_images = {
+    "black": "file://" + image_path("colors/black.png"),
+    "white": "file://" + image_path("colors/white.png"),
+    "red_and_white": "file://" + image_path("colors/red_and_white.png"),
 }
 
 
@@ -96,12 +106,15 @@ class TestCallbacks:
 class TestExtractImageColors:
     quantization_methods = [None, "FastOctree", "MedianCut", "MaxCoverage", "libimagequant"]
 
-    def test_can_extract_colors(self, media_lights_sync):
-        colors = media_lights_sync.get_colors(rgb_images[0])
-
+    def assert_two_colors(self, colors):
         assert len(colors) == 2
         assert len(colors[0]) == 3
         assert len(colors[1]) == 3
+
+    def test_can_extract_colors(self, media_lights_sync):
+        colors = media_lights_sync.get_colors(rgb_images[0])
+
+        self.assert_two_colors(colors)
 
     def test_can_extract_colors_on_rgba_image_with_mediancut(self, media_lights_sync, update_passed_args, given_that):
         with update_passed_args():
@@ -109,9 +122,7 @@ class TestExtractImageColors:
 
         colors = media_lights_sync.get_colors(rgba_images["4kBigFile"])
 
-        assert len(colors) == 2
-        assert len(colors[0]) == 3
-        assert len(colors[1]) == 3
+        self.assert_two_colors(colors)
 
     def test_all_quantization_methods_on_rgb_image(self, media_lights_sync, update_passed_args, given_that):
         for method in self.quantization_methods:
@@ -120,9 +131,7 @@ class TestExtractImageColors:
 
             colors = media_lights_sync.get_colors(rgb_images[0])
 
-            assert len(colors) == 2
-            assert len(colors[0]) == 3
-            assert len(colors[1]) == 3
+            self.assert_two_colors(colors)
 
     def test_all_quantization_methods_on_rgba_image(self, media_lights_sync, update_passed_args, given_that):
         for method in self.quantization_methods:
@@ -131,30 +140,70 @@ class TestExtractImageColors:
 
             colors = media_lights_sync.get_colors(rgba_images["nyanCat"])
 
-            assert len(colors) == 2
-            assert len(colors[0]) == 3
-            assert len(colors[1]) == 3
+            self.assert_two_colors(colors)
 
 
-def test_can_change_lights(assert_that, media_player, given_that):
-    media_player('media_player.tv_test').update_state('playing', {"entity_picture": rgb_images[0]})
+class TestBehaviors:
+    def test_can_change_lights(self, assert_that, media_player, given_that):
+        media_player('media_player.tv_test').update_state('playing', {"entity_picture": rgb_images[0]})
 
-    assert_that('light.test_light_1').was.turned_on(brightness=255, rgb_color=[59, 180, 180])
-    assert_that('light.test_light_2').was.turned_on(brightness=255, rgb_color=[46, 56, 110])
-    given_that.mock_functions_are_cleared()
+        assert_that('light.test_light_1').was.turned_on(brightness=255, rgb_color=[59, 180, 180])
+        assert_that('light.test_light_2').was.turned_on(brightness=255, rgb_color=[46, 56, 110])
+        given_that.mock_functions_are_cleared()
 
-    media_player('media_player.tv_test').update_state('playing', {"entity_picture": rgb_images[1]})
+        media_player('media_player.tv_test').update_state('playing', {"entity_picture": rgb_images[1]})
 
-    assert_that('light.test_light_1').was.turned_on(brightness=255, rgb_color=[153, 68, 106])
-    assert_that('light.test_light_2').was.turned_on(brightness=255, rgb_color=[111, 11, 24])
+        assert_that('light.test_light_1').was.turned_on(brightness=255, rgb_color=[153, 68, 106])
+        assert_that('light.test_light_2').was.turned_on(brightness=255, rgb_color=[111, 11, 24])
 
+    def test_calling_twice_skips_color_extraction(self, media_player, hass_logs, hass_mocks):
+        media_player('media_player.tv_test').update_state('playing', {"entity_picture": rgb_images[0], "entity_picture_local": rgb_images[0]})
+        media_player('media_player.tv_test').update_state('playing', {"entity_picture": rgb_images[0], "entity_picture_local": rgb_images[0]})
 
-def test_calling_twice_skips_color_extraction(media_player, hass_logs, hass_mocks):
-    media_player('media_player.tv_test').update_state('playing', {"entity_picture": rgb_images[0], "entity_picture_local": rgb_images[0]})
-    media_player('media_player.tv_test').update_state('playing', {"entity_picture": rgb_images[0], "entity_picture_local": rgb_images[0]})
+        assert len(hass_mocks.hass_functions["turn_on"].call_args_list) == 2
+        assert "skipped" in hass_logs()[-1]
 
-    assert len(hass_mocks.hass_functions["turn_on"].call_args_list) == 2
-    assert "skipped" in hass_logs()[-1]
+    def test_can_saturate_colors(self, given_that, media_lights_sync, media_player, assert_that, update_passed_args):
+        base_color = [59, 180, 180]
+        saturated_color = media_lights_sync.get_saturated_color(base_color)
+        with update_passed_args():
+            given_that.passed_arg('use_saturated_colors').is_set_to(True)
+
+        media_player('media_player.tv_test').update_state('playing', {"entity_picture": rgb_images[0]})
+
+        assert_that('light.test_light_1').was_not.turned_on(brightness=255, rgb_color=base_color)
+        assert_that('light.test_light_1').was.turned_on(brightness=255, rgb_color=saturated_color)
+
+    def test_givin_wrong_method_use_defaults(self, given_that, media_lights_sync, hass_logs, update_passed_args):
+        with update_passed_args():
+            given_that.passed_arg('quantization_method').is_set_to('InvalidMethod')
+
+        assert any('Using default' in log for log in hass_logs())
+        assert media_lights_sync.quantization_method is None
+
+    def test_skip_if_image_is_all_black(self, media_player, assert_that, hass_logs):
+        media_player('media_player.tv_test').update_state('playing', {"entity_picture": color_images['black']})
+
+        assert_that('light.test_light_1').was_not.turned_on()
+        assert_that('light.test_light_2').was_not.turned_on()
+        assert any('Skipped black color' in log for log in hass_logs())
+
+    def test_set_only_one_light_if_image_is_all_white(self, media_player, assert_that, hass_mocks, hass_logs):
+        media_player('media_player.tv_test').update_state('playing', {"entity_picture": color_images['white']})
+        print("yo")
+        print(hass_mocks.hass_functions)
+
+        assert_that('light.test_light_1').was.turned_on(brightness=255, rgb_color=[255, 255, 255])
+        assert_that('light.test_light_2').was_not.turned_on()
+        assert any('Skipped black color' in log for log in hass_logs())
+
+    def test_set_only_one_light_if_image_is_all_white2(self, media_player, assert_that, hass_mocks):
+        media_player('media_player.tv_test').update_state('playing', {"entity_picture": color_images['red_and_white']})
+        print("yo")
+        print(hass_mocks.hass_functions)
+
+        assert_that('light.test_light_1').was.turned_on(brightness=255, rgb_color=[255, 255, 255])
+        assert_that('light.test_light_2').was.turned_on(brightness=255, rgb_color=[255, 0, 0])
 
 
 class TestResetLights:
@@ -218,26 +267,6 @@ class TestURLErrors:
 
         assert any('Unable to fetch artwork' in log for log in hass_errors())
         assert len(hass_mocks.hass_functions["turn_on"].call_args_list) == 0
-
-
-def test_can_saturate_colors(given_that, media_lights_sync, media_player, assert_that, update_passed_args):
-    base_color = [59, 180, 180]
-    saturated_color = media_lights_sync.get_saturated_color(base_color)
-    with update_passed_args():
-        given_that.passed_arg('use_saturated_colors').is_set_to(True)
-
-    media_player('media_player.tv_test').update_state('playing', {"entity_picture": rgb_images[0]})
-
-    assert_that('light.test_light_1').was_not.turned_on(brightness=255, rgb_color=base_color)
-    assert_that('light.test_light_1').was.turned_on(brightness=255, rgb_color=saturated_color)
-
-
-def test_givin_wrong_method_use_defaults(given_that, media_lights_sync, hass_logs, update_passed_args):
-    with update_passed_args():
-        given_that.passed_arg('quantization_method').is_set_to('InvalidMethod')
-
-    assert any('Using default' in log for log in hass_logs())
-    assert media_lights_sync.quantization_method is None
 
 
 class TestBrightness:
