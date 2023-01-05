@@ -307,6 +307,28 @@ class TestConditions:
         assert conditional_media_lights_sync.can_change_colors() == False
 
 
+class TestTemplateConditions:
+    template = "{{ 'test' != 123 and is_state('sun.sun', 'below_horizon') }}"
+
+    @pytest.fixture
+    def conditional_template_media_lights_sync(self, media_lights_sync, given_that, update_passed_args):
+        given_that.state_of('sun.sun').is_set_to('below_horizon')
+        with update_passed_args():
+            given_that.passed_arg('condition').is_set_to({"value_template": self.template})
+
+        # hass.render_template is not available in appdaemontestframework, so we mock it here.
+        media_lights_sync.render_template = lambda _template: 'test' != 123 and media_lights_sync.get_state('sun.sun') == 'below_horizon'
+        return media_lights_sync
+
+    def test_can_change_if_condition_is_met(self, given_that, conditional_template_media_lights_sync):
+        given_that.state_of('sun.sun').is_set_to('below_horizon')
+        assert conditional_template_media_lights_sync.can_change_colors() == True
+
+    def test_wont_change_if_condition_is_false(self, given_that, conditional_template_media_lights_sync):
+        given_that.state_of('sun.sun').is_set_to('above_horizon')
+        assert conditional_template_media_lights_sync.can_change_colors() == False
+
+
 class TestFormatUrl:
     relative_url = "/api/media_player_proxy/media_player.tv_test"
 
