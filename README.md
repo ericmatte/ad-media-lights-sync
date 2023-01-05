@@ -73,7 +73,7 @@ media_lights_sync:
 | `use_saturated_colors`   | True     | bool           | `false`             | Increase the saturation and brightness of the colors.                                                                       |
 | `use_current_brightness` | True     | bool           | `false`             | Do not change lights brightness. If `false`, it will always sets all lights to maximum brightness.                          |
 | `transition`             | True     | number         | `null`              | Number that represents the time (in seconds) the light should take to transition to new states.                             |
-| `condition`              | True     | object         |                     | Sync lights only if the state of the condition entity is valid.                                                             |
+| `condition`              | True     | object         |                     | Sync lights only if the state of the condition entity is True.                                                              |
 | `condition.entity`       | False    | string         |                     | The entity_id of the condition.                                                                                             |
 | `condition.state`        | False    | string         |                     | The state to match in order for the lights to sync.                                                                         |
 
