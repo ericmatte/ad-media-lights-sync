@@ -70,6 +70,9 @@ class MediaLightsSync(hass.Hass):
             self.media_player_callbacks[entity] = current_pictures
             for i in range(len(self.lights)):
                 color = self.get_saturated_color(rgb_colors[i]) if self.use_saturated_colors else rgb_colors[i]
+                if color == [0, 0, 0]:
+                    self.log("Skipped black color for '{entity}' light".format(entity=self.lights[i]))
+                    continue
                 self.set_light("on", self.lights[i], color=color, brightness=self.brightness, transition=self.transition)
         else:
             self.reset_lights()
