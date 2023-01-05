@@ -9,15 +9,24 @@ from PIL import Image
 
 test_light_1_base_state = {'brightness': 50, 'rgb_color': [123, 123, 123]}
 
+
+def image_path(relative_path):
+    return os.path.abspath("./tests/mocks/" + relative_path)
+
+
 rgb_images = [
-    "file://" + os.path.abspath("./examples/example-1.jpg"),
-    "file://" + os.path.abspath("./examples/example-2.jpg"),
+    "file://" + image_path("../../examples/example-1.jpg"),
+    "file://" + image_path("../../examples/example-2.jpg"),
 ]
 rgba_images = {
-    "4kBigFile": "file://" + os.path.abspath("./tests/rgba_4k.png"),
-    "nyanCat": "file://" + os.path.abspath("./tests/rgba_nyan_cat.png"),
+    "4kBigFile": "file://" + image_path("rgba_4k.png"),
+    "nyanCat": "file://" + image_path("rgba_nyan_cat.png"),
 }
-black_image = "file://" + os.path.abspath("./tests/black.png")
+color_images = {
+    "black": "file://" + image_path("colors/black.png"),
+    "white": "file://" + image_path("colors/white.png"),
+    "red_and_white": "file://" + image_path("colors/red_and_white.png"),
+}
 
 
 @pytest.fixture
@@ -173,11 +182,28 @@ class TestBehaviors:
         assert media_lights_sync.quantization_method is None
 
     def test_skip_if_image_is_all_black(self, media_player, assert_that, hass_logs):
-        media_player('media_player.tv_test').update_state('playing', {"entity_picture": black_image})
+        media_player('media_player.tv_test').update_state('playing', {"entity_picture": color_images['black']})
 
         assert_that('light.test_light_1').was_not.turned_on()
         assert_that('light.test_light_2').was_not.turned_on()
         assert any('Skipped black color' in log for log in hass_logs())
+
+    def test_set_only_one_light_if_image_is_all_white(self, media_player, assert_that, hass_mocks, hass_logs):
+        media_player('media_player.tv_test').update_state('playing', {"entity_picture": color_images['white']})
+        print("yo")
+        print(hass_mocks.hass_functions)
+
+        assert_that('light.test_light_1').was.turned_on(brightness=255, rgb_color=[255, 255, 255])
+        assert_that('light.test_light_2').was_not.turned_on()
+        assert any('Skipped black color' in log for log in hass_logs())
+
+    def test_set_only_one_light_if_image_is_all_white2(self, media_player, assert_that, hass_mocks):
+        media_player('media_player.tv_test').update_state('playing', {"entity_picture": color_images['red_and_white']})
+        print("yo")
+        print(hass_mocks.hass_functions)
+
+        assert_that('light.test_light_1').was.turned_on(brightness=255, rgb_color=[255, 255, 255])
+        assert_that('light.test_light_2').was.turned_on(brightness=255, rgb_color=[255, 0, 0])
 
 
 class TestResetLights:
