@@ -2,7 +2,7 @@
 
 _AppDaemon App that synchronizes the color of RGB lights with the thumbnail of a media player in Home Assistant._
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs) [![](https://img.shields.io/github/release/ericmatte/ad-media-lights-sync/all.svg?style=for-the-badge)](https://github.com/ericmatte/ad-media-lights-sync/releases) [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ericmatte/ad-media-lights-sync/Tests?style=for-the-badge)](https://github.com/ericmatte/ad-media-lights-sync/actions) ![downloads-latest](https://img.shields.io/github/downloads/ericmatte/ad-media-lights-sync/total?style=for-the-badge)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs) [![](https://img.shields.io/github/release/ericmatte/ad-media-lights-sync/all.svg?style=for-the-badge)](https://github.com/ericmatte/ad-media-lights-sync/releases) ![downloads-latest](https://img.shields.io/github/downloads/ericmatte/ad-media-lights-sync/total?style=for-the-badge)
 
 [![Tests](https://github.com/ericmatte/ad-media-lights-sync/actions/workflows/tests.yaml/badge.svg?branch=master)](https://github.com/ericmatte/ad-media-lights-sync/actions/workflows/tests.yaml)
 
