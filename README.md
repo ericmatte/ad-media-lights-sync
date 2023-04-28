@@ -130,3 +130,4 @@ _If you've found that this app is working with another device, just let me know 
 
 - Based on `music_lights.py` from this project: https://github.com/astone123/appdaemon-apps.
 - If you find a bug with another type of media player or light, PRs and detailed issues are welcome.
+- Forum discussion: https://community.home-assistant.io/t/syncing-led-lights-to-playing-music/38850/21
