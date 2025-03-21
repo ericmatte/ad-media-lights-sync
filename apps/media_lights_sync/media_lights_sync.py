@@ -133,11 +133,30 @@ class MediaLightsSync(hass.Hass):
         fd = urlopen(url, context=context)
         f = io.BytesIO(fd.read())
         im = Image.open(f)
+        im = self.square_spotify_thumbnails(im)
         if im.mode == "RGBA" and self.quantization_method not in [None, Image.FASTOCTREE, Image.LIBIMAGEQUANT]:
             im = self.convert_rgba_to_rgb(im)
 
         palette = im.quantize(colors=len(self.lights), method=self.quantization_method).getpalette()
         return self.extract_colors(palette, len(self.lights))
+
+    def square_spotify_thumbnails(self, image):
+        width, height = image.size
+        is_square = width == height
+        is_300 = width == 300
+
+        spotify_logo_pixel = image.getpixel((80,256))
+        has_spotify_logo = all([i == 255 for i in spotify_logo_pixel]) # is full white (255, 255, 255, 255 in rgba)
+
+        if not (is_square and is_300 and has_spotify_logo): return
+
+        cropped_image = image.crop((33,0,267, 234))
+
+        self.log("cropped spotify thumbnail")
+        cropped_image.save("/media/temp.png")
+        self.log(f"Saved image as temp.png in media folder")
+        
+        return cropped_image
 
     def convert_rgba_to_rgb(self, rgba_image):
         rgba_image.load()  # required for png.split()
