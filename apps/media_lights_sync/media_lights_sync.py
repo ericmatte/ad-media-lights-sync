@@ -153,11 +153,7 @@ class MediaLightsSync(hass.Hass):
         if not (is_square and is_300 and has_spotify_logo): return
 
         cropped_image = image.crop((33,0,267, 234))
-
         self.log("cropped spotify thumbnail")
-        cropped_image.save("/media/temp.png")
-        self.log(f"Saved image as temp.png in media folder")
-        
         return cropped_image
 
     def convert_rgba_to_rgb(self, rgba_image):
