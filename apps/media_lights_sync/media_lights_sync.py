@@ -35,6 +35,7 @@ class MediaLightsSync(hass.Hass):
         self.use_saturated_colors = args.get("use_saturated_colors", False)
         self.brightness = None if args.get("use_current_brightness", False) else 255
         self.quantization_method = self.get_quantization_method(args.get("quantization_method", None))
+        self.crop_spotify_thumbnails = args.get("crop_spotify_thumbnails", false)
 
         self.media_player_callbacks = {}
         self.initial_lights_states = None
@@ -133,7 +134,8 @@ class MediaLightsSync(hass.Hass):
         fd = urlopen(url, context=context)
         f = io.BytesIO(fd.read())
         im = Image.open(f)
-        im = self.square_spotify_thumbnails(im)
+        if self.crop_spotify_thumbnails:
+            im = self.square_spotify_thumbnails(im)
         if im.mode == "RGBA" and self.quantization_method not in [None, Image.FASTOCTREE, Image.LIBIMAGEQUANT]:
             im = self.convert_rgba_to_rgb(im)
 
