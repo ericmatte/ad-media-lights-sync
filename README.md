@@ -78,6 +78,7 @@ media_lights_sync:
 | `condition`              | True     | object         |                     | Sync lights only if the state of the condition entity is True.                                                              |
 | `condition.entity`       | False    | string         |                     | The entity_id of the condition.                                                                                             |
 | `condition.state`        | False    | string         |                     | The state to match in order for the lights to sync.                                                                         |
+| `crop_spotify_thumbnails` | True     | bool           | `False`             | Whether or not to crop the empty space and spotify logo from media thumbnails given by spotify.                            |
 
 <b id="ha-url-note">[1](#ha-url)</b>: See `/developer-tools/state` in your Home Assistant instance. This app will listen to changes on `entity_picture_local` and/or `entity_picture` attributes of your `media_player` entities.
 
@@ -125,6 +126,10 @@ That said, it has been tested and is working with the following devices:
   - Yeelight (YLDP02YL, YLDD02YL)
 
 _If you've found that this app is working with another device, just let me know so I can update this list._
+
+Some media players playing spotify, gets a logo and some empty space around the image. This can mess with the color extraction. If you are mainly playing music where you get this, you can set the `crop_spotify_thumbnails` setting to true, which will crop out these parts of the image before processing.
+
+![spotify thumbnail](examples/spotify.png)
 
 ## Notes
 
