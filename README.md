@@ -1,3 +1,6 @@
+> [!WARNING]
+> This repository is not maintained anymore. Feel free to fork it if needed.
+
 # Media Player Lights Sync
 
 _AppDaemon App that synchronizes the color of RGB lights with the thumbnail of a media player in Home Assistant._
